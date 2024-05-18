@@ -1,8 +1,17 @@
 <div align="center">
 
-# Simple Java Wrapper for the AGHPB API 
+# ☕ AGHPB4J 📚
+<sub>Java Wrapper for the anime girls holding programming books [API](https://api.devgoldy.xyz/aghpb/v1/docs).
 
 </div>
+
+<div align="center">
+    <img src="https://raw.githubusercontent.com/cat-milk/Anime-Girls-Holding-Programming-Books/master/Java/Natsukawa_Masuzu_Java_Programming.png" width="400px">
+</div>
+
+> [!Note]
+> 
+> I am not the original author of the aghpb API. You can view their Wrappers for other Languages [here](https://github.com/THEGOLDENPRO/aghpb_api#-api-wrappers).
 
 This Wrapper is based on the [AGHPB API](https://github.com/THEGOLDENPRO/aghpb_api/). It is a simple Java Wrapper that allows you to interact with the API in a more convenient way.
 
