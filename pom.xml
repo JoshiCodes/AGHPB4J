@@ -6,7 +6,7 @@
 
     <groupId>de.joshicodes</groupId>
     <artifactId>AGHPB4J</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <distributionManagement>
         <repository>
@@ -25,8 +25,16 @@
                 <configuration>
                     <source>17</source>
                     <doclint>none</doclint>
-                    <goal>jar</goal>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>release</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
