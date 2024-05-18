@@ -18,7 +18,6 @@ public class AGHPB {
     private final String url;
     private final boolean doCache;
 
-    private ApiStatus cachedStatus;
     private List<String> cachedCategories;
 
     public AGHPB() {
@@ -36,10 +35,6 @@ public class AGHPB {
     public AGHPB(final String url, final boolean doCache) {
         this.url = url;
         this.doCache = doCache;
-    }
-
-    public ApiStatus getStatus() {
-        return cachedStatus;
     }
 
     public List<String> getCategories() {
