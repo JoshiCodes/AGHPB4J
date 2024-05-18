@@ -10,9 +10,9 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/JoshiCodes/AGHPB4J</url>
+            <id>joshicodes-de-releases</id>
+            <name>JoshiCodes Repository</name>
+            <url>https://repo.joshicodes.de/releases</url>
         </repository>
     </distributionManagement>
 
