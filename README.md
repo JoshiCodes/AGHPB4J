@@ -4,6 +4,8 @@
 <sub>Java Wrapper for the anime girls holding programming books [API](https://api.devgoldy.xyz/aghpb/v1/docs).
 
 ![GitHub Release](https://img.shields.io/github/v/release/JoshiCodes/AGHPB4J?include_prereleases&sort=date&display_name=release)
+<img src="https://repo.joshicodes.de/api/badge/latest/releases/de/joshicodes/AGHPB4J?prefix=v">
+
 
 </div>
 
@@ -18,8 +20,10 @@
 This Wrapper is based on the [AGHPB API](https://github.com/THEGOLDENPRO/aghpb_api/). It is a simple Java Wrapper that allows you to interact with the API in a more convenient way.
 
 ## Installation
+<img src="https://repo.joshicodes.de/api/badge/latest/releases/de/joshicodes/AGHPB4J?prefix=v&name=Current Version">
+
 To use this Wrapper, you need to add the following repository and dependency to your `pom.xml` file.
-Replace `VERSION` with the latest version found [here](https://github.com/JoshiCodes/AGHPB4J/releases).
+Replace `VERSION` with the latest version seen above or found [here](https://github.com/JoshiCodes/AGHPB4J/releases).
 
 ```xml
 <repositories>
