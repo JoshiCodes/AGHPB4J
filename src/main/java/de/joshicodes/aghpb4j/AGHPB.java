@@ -20,39 +20,110 @@ public class AGHPB {
 
     private List<String> cachedCategories;
 
+    /**
+     * Creates a new AGHPB instance with the default url and no default caching.
+     */
     public AGHPB() {
         this(DEFAULT_URL, false);
     }
 
+    /**
+     * Creates a new AGHPB instance for the specified url and no default caching.
+     * @param url The url of the AGHPB API.
+     */
     public AGHPB(final String url) {
         this(url, false);
     }
 
+    /**
+     * Creates a new AGHPB instance with the default url and the specified caching.
+     * @param doCache Whether to cache by default or not.
+     */
     private AGHPB(final boolean doCache) {
         this(DEFAULT_URL, doCache);
     }
 
+    /**
+     * Creates a new AGHPB instance for the specified url and the specified caching.
+     * @param url The url of the AGHPB API.
+     * @param doCache Whether to cache by default or not.
+     */
     public AGHPB(final String url, final boolean doCache) {
         this.url = url;
         this.doCache = doCache;
     }
 
+    /**
+     * Returns the url of the AGHPB API. <br>
+     * If no cached categories are present and cached is <b>disabled</b>, an IllegalStateException will be thrown. <br>
+     * If no cached categories are present and cached is <b>enabled</b>, the categories will be retrieved and cached. <b>This is a blocking operation.</b>
+     * @return The cached categories or null if no categories are cached and caching is disabled.
+     */
     public List<String> getCategories() {
+        if(cachedCategories == null) {
+            if(!doCache) {
+                throw new IllegalStateException("You are trying to access cached categories, without retrieving them first. Please use #retrieveAllCategories(true) first or enable caching in the constructor.");
+            }
+            try {
+                cachedCategories = retrieveAllCategories().execute();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         return cachedCategories;
     }
 
+    /**
+     * Retrieves a random book from the AGHPB API. <br>
+     * The book will be in PNG format and will be retrieved from any category. <br>
+     * @return An ImageAction for the random book.
+     *
+     * @see #retrieveRandomBook(String)
+     * @see #retrieveRandomBook(AGHPBook.BookImageType)
+     * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
+     */
     public ImageAction<AGHPBook> retrieveRandomBook() {
         return retrieveRandomBook(null, AGHPBook.BookImageType.PNG);
     }
 
+    /**
+     * Retrieves a random book from the AGHPB API. <br>
+     * The book will be in PNG format and will be retrieved from the specified category. <br>
+     * @param category The category to retrieve the book from.
+     * @return An ImageAction for the random book.
+     *
+     * @see #retrieveRandomBook()
+     * @see #retrieveRandomBook(AGHPBook.BookImageType)
+     * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
+     */
     public ImageAction<AGHPBook> retrieveRandomBook(String category) {
         return retrieveRandomBook(category, AGHPBook.BookImageType.PNG);
     }
 
+    /**
+     * Retrieves a random book from the AGHPB API. <br>
+     * The book will be in the specified format and will be retrieved from any category. <br>
+     * @param type The format of the book.
+     * @return An ImageAction for the random book.
+     *
+     * @see #retrieveRandomBook()
+     * @see #retrieveRandomBook(String)
+     * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
+     */
     public ImageAction<AGHPBook> retrieveRandomBook(AGHPBook.BookImageType type) {
         return retrieveRandomBook(null, type);
     }
 
+    /**
+     * Retrieves a random book from the AGHPB API. <br>
+     * @param category The category to retrieve the book from. Can be null.
+     * @param type The format of the book. Can be null.
+     * @return An ImageAction for the random book.
+     *
+     * @see #retrieveRandomBook()
+     * @see #retrieveRandomBook(String)
+     * @see #retrieveRandomBook(AGHPBook.BookImageType)
+     */
     public ImageAction<AGHPBook> retrieveRandomBook(String category, AGHPBook.BookImageType type) {
         final String url = this.url + "/random" + (category == null ? "" : "?category=" + category);
         return new ImageAction<>(url, AGHPBook.class, (request) -> {
@@ -81,6 +152,12 @@ public class AGHPB {
         });
     }
 
+    /**
+     * Retrieves the status of the AGHPB API.
+     * @return A RestAction for the status.
+     *
+     * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/misc/status_nya_get">API Documentation</a>
+     */
     public RestAction<ApiStatus> retrieveStatus() {
         return new RestAction<>(url + "/nya", "GET", ApiStatus.class, response -> {
             JsonObject json = response.getAsJsonObject();
@@ -91,10 +168,28 @@ public class AGHPB {
         });
     }
 
+    /**
+     * Retrieves all categories from the AGHPB API. <br>
+     * This method will cache the categories if caching is enabled. <br>
+     * @return A RestAction for the categories.
+     *
+     * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/books/All_Available_Categories_categories_get">API Documentation</a>
+     * @see #retrieveAllCategories(boolean) to specify whether to cache or not.
+     * @see #getCategories() when caching is enabled.
+     */
     public RestAction<List<String>> retrieveAllCategories() {
         return retrieveAllCategories(doCache);
     }
 
+    /**
+     * Retrieves all categories from the AGHPB API. <br>
+     * @param doCache Whether to cache the categories or not.
+     * @return A RestAction for the categories.
+     *
+     * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/books/All_Available_Categories_categories_get">API Documentation</a>
+     * @see #retrieveAllCategories() to cache when doCache is enabled.
+     * @see #getCategories() when caching is enabled.
+     */
     public RestAction<List<String>> retrieveAllCategories(boolean doCache) {
         return new RestAction<List<String>>(url + "/categories", "GET", null, (response) -> {
             JsonElement json = response.getAsJsonElement();
@@ -116,6 +211,13 @@ public class AGHPB {
         });
     }
 
+    /**
+     * Retrieves the info of the AGHPB API. <br>
+     * The Info contains the book count and the API version. <br>
+     * @return A RestAction for the info.
+     *
+     * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/other/Info_about_the_current_instance__info_get">API Documentation</a>
+     */
     public RestAction<ApiInfo> retrieveInfo() {
         return new RestAction<>(url + "/info", "GET", ApiInfo.class, response -> {
             JsonObject json = response.getAsJsonObject();

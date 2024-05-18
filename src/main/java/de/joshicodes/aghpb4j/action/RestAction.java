@@ -41,16 +41,43 @@ public class RestAction<T> {
         this(url, "GET", tClass, clientModifier, responseHandler);
     }
 
+    /**
+     * Executes the request asynchronously. <br>
+     * If you want to execute the request synchronously, use {@link #execute()} instead.
+     *
+     * @see #execute()
+     * @see #queue(Consumer)
+     * @see #queue(Consumer, Consumer)
+     */
     public void queue() {
         queue(null, null);
     }
 
+    /**
+     * Executes the request asynchronously. <br>
+     * If you want to execute the request synchronously, use {@link #execute()} instead.
+     * @param success The consumer that will be called when the request was successful. Can be null.
+     *
+     * @see #execute()
+     * @see #queue()
+     * @see #queue(Consumer, Consumer)
+     */
     public void queue(Consumer<T> success) {
         queue(success, (e) -> {
             throw new RuntimeException(e);
         });
     }
 
+    /**
+     * Executes the request asynchronously. <br>
+     * If you want to execute the request synchronously, use {@link #execute()} instead.
+     * @param success The consumer that will be called when the request was successful. Can be null.
+     * @param failure The consumer that will be called when the request failed. Can be null.
+     *
+     * @see #execute()
+     * @see #queue()
+     * @see #queue(Consumer)
+     */
     public void queue(Consumer<T> success, Consumer<Throwable> failure) {
         CompletableFuture.runAsync(() -> {
             try {
@@ -62,6 +89,11 @@ public class RestAction<T> {
         }).join();
     }
 
+    /**
+     * Executes the request and returns the result. This method is blocking. <br>
+     * If you want to execute the request asynchronously, use {@link #queue()} instead.
+     * @return The result of the request
+     */
     public T execute() {
         try {
             HttpClient.Builder client = HttpClient.newBuilder()
