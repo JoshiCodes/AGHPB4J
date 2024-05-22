@@ -20,7 +20,7 @@
 This Wrapper is based on the [AGHPB API](https://github.com/THEGOLDENPRO/aghpb_api/). It is a simple Java Wrapper that allows you to interact with the API in a more convenient way.
 
 ## Installation
-<img src="https://repo.joshicodes.de/api/badge/latest/releases/de/joshicodes/AGHPB4J?prefix=v&name=Current Version">
+<img src="https://repo.joshicodes.de/api/badge/latest/releases/de/joshicodes/AGHPB4J?prefix=v&name=Version">
 
 To use this Wrapper, you need to add the following repository and dependency to your `pom.xml` file.
 Replace `VERSION` with the latest version seen above or found [here](https://github.com/JoshiCodes/AGHPB4J/releases).
@@ -66,9 +66,7 @@ AGHPB aghpb = new AGHPB();
 
 AGHPBook book = aghpb.retrieveRandomImage().execute(); // Blocking
 System.out.println(book.getUrl());
-
 // or
-
 aghpb.retrieveRandomImage().queue(book -> System.out.println(book.getUrl())); // Asynchronous
 ```
 
