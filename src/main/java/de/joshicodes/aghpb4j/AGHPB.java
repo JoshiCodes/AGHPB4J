@@ -16,61 +16,20 @@ public class AGHPB {
     public static final String DEFAULT_URL = "https://api.devgoldy.xyz/aghpb/v1";
 
     private final String url;
-    private final boolean doCache;
-
-    private List<String> cachedCategories;
 
     /**
-     * Creates a new AGHPB instance with the default url and no default caching.
+     * Creates a new AGHPB instance with the default url
      */
     public AGHPB() {
-        this(DEFAULT_URL, false);
+        this(DEFAULT_URL);
     }
 
     /**
-     * Creates a new AGHPB instance for the specified url and no default caching.
+     * Creates a new AGHPB instance for the specified url
      * @param url The url of the AGHPB API.
      */
     public AGHPB(final String url) {
-        this(url, false);
-    }
-
-    /**
-     * Creates a new AGHPB instance with the default url and the specified caching.
-     * @param doCache Whether to cache by default or not.
-     */
-    private AGHPB(final boolean doCache) {
-        this(DEFAULT_URL, doCache);
-    }
-
-    /**
-     * Creates a new AGHPB instance for the specified url and the specified caching.
-     * @param url The url of the AGHPB API.
-     * @param doCache Whether to cache by default or not.
-     */
-    public AGHPB(final String url, final boolean doCache) {
         this.url = url;
-        this.doCache = doCache;
-    }
-
-    /**
-     * Returns the url of the AGHPB API. <br>
-     * If no cached categories are present and cached is <b>disabled</b>, an IllegalStateException will be thrown. <br>
-     * If no cached categories are present and cached is <b>enabled</b>, the categories will be retrieved and cached. <b>This is a blocking operation.</b>
-     * @return The cached categories or null if no categories are cached and caching is disabled.
-     */
-    public List<String> getCategories() {
-        if(cachedCategories == null) {
-            if(!doCache) {
-                throw new IllegalStateException("You are trying to access cached categories, without retrieving them first. Please use #retrieveAllCategories(true) first or enable caching in the constructor.");
-            }
-            try {
-                cachedCategories = retrieveAllCategories().execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return cachedCategories;
     }
 
     /**
@@ -170,27 +129,11 @@ public class AGHPB {
 
     /**
      * Retrieves all categories from the AGHPB API. <br>
-     * This method will cache the categories if caching is enabled. <br>
      * @return A RestAction for the categories.
      *
      * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/books/All_Available_Categories_categories_get">API Documentation</a>
-     * @see #retrieveAllCategories(boolean) to specify whether to cache or not.
-     * @see #getCategories() when caching is enabled.
      */
     public RestAction<List<String>> retrieveAllCategories() {
-        return retrieveAllCategories(doCache);
-    }
-
-    /**
-     * Retrieves all categories from the AGHPB API. <br>
-     * @param doCache Whether to cache the categories or not.
-     * @return A RestAction for the categories.
-     *
-     * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/books/All_Available_Categories_categories_get">API Documentation</a>
-     * @see #retrieveAllCategories() to cache when doCache is enabled.
-     * @see #getCategories() when caching is enabled.
-     */
-    public RestAction<List<String>> retrieveAllCategories(boolean doCache) {
         return new RestAction<List<String>>(url + "/categories", "GET", null, (response) -> {
             JsonElement json = response.getAsJsonElement();
             if(json == null || !json.isJsonArray()) {
@@ -203,9 +146,6 @@ public class AGHPB {
                     throw new IllegalStateException("Element is not a JSON primitive");
                 }
                 categories.add(element.getAsString());
-            }
-            if(doCache || this.doCache) {
-                cachedCategories = categories;
             }
             return categories;
         });
