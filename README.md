@@ -60,14 +60,24 @@ This method is blocking and will return the result.
 If you want to execute the request asynchronously, you can use the `#queue()` method.
 This method will return `void`, but can take a `Consumer` as a parameter, which will be called when the request is completed.
 
+```java
+AGHPB aghpb = new AGHPB();
+
+
+AGHPBook book = aghpb.retrieveRandomImage().execute(); // Blocking
+System.out.println(book.getUrl());
+
+// or
+
+aghpb.retrieveRandomImage().queue(book -> System.out.println(book.getUrl())); // Asynchronous
+```
 
 #### Methods
 - `AGHPB#retrieveStatus()` - `ApiStatus`
     Returns the status of the API.
 - `AGHPB#retrieveInfo()` - `ApiInfo`
     Returns the info of the API.
-- `AGHPB#retrieveAllCategories(boolean cache)` - `List<String>`
+- `AGHPB#retrieveAllCategories()` - `List<String>`
     Returns a list of all available categories.
-    If `cache` is true, the result will be cached and can be returned with `AGHPB#getCategories()`.
 - `AGHPB#retrieveRandomImage(@Nullable String category, @Nullable AGHPBook.BookImageType type)` - `AGHPBook`
     Returns a random image. Both parameters are optional and alternatively you can use the `AGHPB#retrieveRandomImage()` method without parameters or with only one parameter.
