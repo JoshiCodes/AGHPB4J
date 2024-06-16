@@ -79,3 +79,12 @@ aghpb.retrieveRandomImage().queue(book -> System.out.println(book.getUrl())); //
     Returns a list of all available categories.
 - `AGHPB#retrieveRandomImage(@Nullable String category, @Nullable AGHPBook.BookImageType type)` - `AGHPBook`
     Returns a random image. Both parameters are optional and alternatively you can use the `AGHPB#retrieveRandomImage()` method without parameters or with only one parameter.
+- `AGHPB#retrieveSearch(String query)` - `List<AGHPBook>`
+    Returns a list of images that match the search query. Alternatively you can use `AGHPB#retrieveSearch(String query, int limit)`, `AGHPB#retrieveSearch(String query, int limit, int page)` or `AGHPB#retrieveSearch(String query, String category)` or `AGHPB#retrieveSearch(String query, String category, int limit)`.
+- `AGHPB#retrieveBook(int searchId)` - `AGHPBook`
+    Returns a book by its search id. Alternatively you can provide a BookImageType to specify the type of the image.
+    Instead of the searchId, you can also provide an unfinished AGHPBook object, to retrieve its image.
+
+<br>
+
+You can find the full JavaDocs [here](https://repo.joshicodes.de/javadoc/releases/de/joshicodes/AGHPB4J/latest/).
