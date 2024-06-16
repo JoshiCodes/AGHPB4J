@@ -6,7 +6,7 @@
 
     <groupId>de.joshicodes</groupId>
     <artifactId>AGHPB4J</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 
     <distributionManagement>
         <repository>
