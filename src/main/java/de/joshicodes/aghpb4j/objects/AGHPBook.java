@@ -37,7 +37,7 @@ public record AGHPBook(
         }
     }
 
-    public ByteArrayInputStream getImageStream() {
+    public ByteArrayInputStream getByteArrayInputStream() {
         return new ByteArrayInputStream(imageBytes);
     }
 
