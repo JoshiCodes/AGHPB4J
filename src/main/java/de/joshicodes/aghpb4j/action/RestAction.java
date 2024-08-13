@@ -14,11 +14,11 @@ import java.util.function.Function;
 
 public class RestAction<T> {
 
-    protected final String url;
+    protected String url;
     protected final String method;
     protected final Class<T> tClass;
 
-    protected final Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier;
+    protected Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier;
     protected final Function<RestResponse, T> responseHandler;
 
     public RestAction(String url, String method, Class<T> tClass, Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, Function<RestResponse, T> responseHandler) {
@@ -114,7 +114,15 @@ public class RestAction<T> {
 
     public record RestResponse<A>(HttpResponse<A> httpResponse, Class<A> aClass) {
 
+        public String rawBody() {
+            if(httpResponse.body() == null)
+                return null;
+            return String.valueOf(httpResponse.body());
+        }
+
         public JsonElement getAsJsonElement() {
+            if(httpResponse.statusCode() != 200)
+                return null;
             if(httpResponse.body() == null)
                 return null;
             String body = String.valueOf(httpResponse.body());

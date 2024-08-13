@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.joshicodes.aghpb4j.action.ImageAction;
+import de.joshicodes.aghpb4j.action.RandomImageAction;
 import de.joshicodes.aghpb4j.action.RestAction;
 import de.joshicodes.aghpb4j.objects.AGHPBook;
 
@@ -41,8 +42,8 @@ public class AGHPB {
      * @see #retrieveRandomBook(AGHPBook.BookImageType)
      * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
      */
-    public ImageAction<AGHPBook> retrieveRandomBook() {
-        return retrieveRandomBook(null, AGHPBook.BookImageType.PNG);
+    public RandomImageAction retrieveRandomBook() {
+        return new RandomImageAction(url);
     }
 
     /**
@@ -55,8 +56,8 @@ public class AGHPB {
      * @see #retrieveRandomBook(AGHPBook.BookImageType)
      * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
      */
-    public ImageAction<AGHPBook> retrieveRandomBook(String category) {
-        return retrieveRandomBook(category, AGHPBook.BookImageType.PNG);
+    public RandomImageAction retrieveRandomBook(String category) {
+        return retrieveRandomBook().withCategory(category);
     }
 
     /**
@@ -69,8 +70,8 @@ public class AGHPB {
      * @see #retrieveRandomBook(String)
      * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
      */
-    public ImageAction<AGHPBook> retrieveRandomBook(AGHPBook.BookImageType type) {
-        return retrieveRandomBook(null, type);
+    public RandomImageAction retrieveRandomBook(AGHPBook.BookImageType type) {
+        return retrieveRandomBook().useType(type);
     }
 
     /**
@@ -83,32 +84,8 @@ public class AGHPB {
      * @see #retrieveRandomBook(String)
      * @see #retrieveRandomBook(AGHPBook.BookImageType)
      */
-    public ImageAction<AGHPBook> retrieveRandomBook(String category, AGHPBook.BookImageType type) {
-        final String url = this.url + "/random" + (category == null ? "" : "?category=" + category);
-        return new ImageAction<>(url, AGHPBook.class, (request) -> {
-            request.header("Accept", "image/" + type.name().toLowerCase());
-            return request;
-        }, response -> {
-            final String contentType = response.httpResponse().headers().firstValue("Content-Type").orElse(null);
-            if(contentType == null || !contentType.startsWith("image/")) {
-                JsonElement json = response.getAsJsonElement();
-                throw new IllegalStateException("Response is not an image! " + (json != null ? ("( " + json + " )") : ""));
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                baos.write(response.httpResponse().body());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            final String imageCategory = response.httpResponse().headers().firstValue("Book-Category").orElse(null);
-            final String bookName = response.httpResponse().headers().firstValue("Book-Name").orElse(null);
-            final String commitAuthor = response.httpResponse().headers().firstValue("Book-Commit-Author").orElse(null);
-            final String commitHash = response.httpResponse().headers().firstValue("Book-Commit-Hash").orElse(null);
-            final String commitUrl = response.httpResponse().headers().firstValue("Book-Commit-Url").orElse(null);
-            final int searchId = Integer.parseInt(response.httpResponse().headers().firstValue("Book-Search-Id").orElse("-1"));
-            // final Date dateAdded = new Date(response.httpResponse().headers().firstValue("Book-Date-Added").orElse(null));
-            return new AGHPBook(baos.toByteArray(), type, imageCategory, commitAuthor, commitHash, commitUrl, bookName, searchId);
-        });
+    public RandomImageAction retrieveRandomBook(String category, AGHPBook.BookImageType type) {
+        return retrieveRandomBook().withCategory(category).useType(type);
     }
 
     /**
@@ -266,7 +243,7 @@ public class AGHPB {
      * @return An ImageAction for the book.
      */
     public ImageAction<AGHPBook> retrieveBook(int searchId, AGHPBook.BookImageType type) {
-        final String url = this.url + "/book?search_id=" + searchId;
+        final String url = this.url + "/get/id/" + searchId;
         return new ImageAction<>(url, AGHPBook.class, (request) -> {
             request.header("Accept", "image/" + type.name().toLowerCase());
             return request;

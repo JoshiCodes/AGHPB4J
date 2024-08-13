@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class ImageAction<T> extends RestAction<T> {
 
-    private final Function<RestResponse<byte[]>, T> responseHandler;
+    protected Function<RestResponse<byte[]>, T> responseHandler;
 
     public ImageAction(String url, Class<T> tClass, Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, Function<RestResponse<byte[]>, T> responseHandler) {
         super(url, "GET", tClass, clientModifier, null);
