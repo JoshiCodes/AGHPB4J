@@ -96,20 +96,53 @@ public class RestAction<T> {
      */
     public T execute() {
         try {
-            HttpClient.Builder client = HttpClient.newBuilder()
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .version(HttpClient.Version.HTTP_2);
-            HttpRequest.Builder request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .method(method, HttpRequest.BodyPublishers.noBody());
-            if(clientModifier != null) {
-                request = clientModifier.apply(request);
-            }
-            HttpResponse<String> response = client.build().send(request.build(), HttpResponse.BodyHandlers.ofString());
+            HttpClient.Builder client = build();
+            HttpRequest.Builder request = buildRequest();
+            HttpResponse<String> response = sendRequest(client.build(), request.build(), HttpResponse.BodyHandlers.ofString(), 3);
             return responseHandler.apply(new RestResponse<>(response, String.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected <C> HttpResponse<C> sendRequest(HttpClient client, HttpRequest request, HttpResponse.BodyHandler<C> handler, int retries) {
+        try {
+            HttpResponse<C> response = client.send(request, handler);
+            if(response.headers().firstValue("x-ratelimit-remaining").orElse("1").equals("0")) {
+                // Rate limit
+                final long reset = Long.parseLong(response.headers().firstValue("x-ratelimit-reset").orElse("0"));
+                final long now = System.currentTimeMillis() / 1000;
+                final long diff = reset - now;
+                if(diff > 0) {
+                    // Sleep
+                    Thread.sleep(diff * 1000);
+                    // Retry
+                    return sendRequest(client, request, handler, retries - 1);
+                }
+            }
+            return response;
+        } catch (Exception e) {
+            if(retries > 0) {
+                return sendRequest(client, request, handler, retries - 1);
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected HttpClient.Builder build() {
+        return HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .version(HttpClient.Version.HTTP_2);
+    }
+
+    protected HttpRequest.Builder buildRequest() {
+        HttpRequest.Builder request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .method(method, HttpRequest.BodyPublishers.noBody());
+        if(clientModifier != null) {
+            request = clientModifier.apply(request);
+        }
+        return request;
     }
 
     public record RestResponse<A>(HttpResponse<A> httpResponse, Class<A> aClass) {
