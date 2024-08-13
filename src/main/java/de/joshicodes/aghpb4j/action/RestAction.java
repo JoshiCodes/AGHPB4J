@@ -21,7 +21,7 @@ public class RestAction<T> {
     protected Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier;
     protected final Function<RestResponse, T> responseHandler;
 
-    public RestAction(String url, String method, Class<T> tClass, Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, Function<RestResponse, T> responseHandler) {
+    public RestAction(final String url, final String method, final Class<T> tClass, final Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, final Function<RestResponse, T> responseHandler) {
         this.url = url;
         this.method = method;
         this.tClass = tClass;
@@ -29,15 +29,15 @@ public class RestAction<T> {
         this.responseHandler = responseHandler;
     }
 
-    public RestAction(String url, String method, Class<T> tClass, Function<RestResponse, T> responseHandler) {
+    public RestAction(final String url, final String method, final Class<T> tClass, final Function<RestResponse, T> responseHandler) {
         this(url, method, tClass, Function.identity(), responseHandler);
     }
 
-    public RestAction(String url, String method, Class<T> tClass) {
+    public RestAction(final String url, final String method, final Class<T> tClass) {
         this(url, method, tClass, Function.identity(), response -> null);
     }
 
-    public RestAction(String url, Class<T> tClass, Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, Function<RestResponse, T> responseHandler) {
+    public RestAction(final String url, final Class<T> tClass, final Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, final Function<RestResponse, T> responseHandler) {
         this(url, "GET", tClass, clientModifier, responseHandler);
     }
 
@@ -62,7 +62,7 @@ public class RestAction<T> {
      * @see #queue()
      * @see #queue(Consumer, Consumer)
      */
-    public void queue(Consumer<T> success) {
+    public void queue(final Consumer<T> success) {
         queue(success, (e) -> {
             throw new RuntimeException(e);
         });
@@ -78,10 +78,10 @@ public class RestAction<T> {
      * @see #queue()
      * @see #queue(Consumer)
      */
-    public void queue(Consumer<T> success, Consumer<Throwable> failure) {
+    public void queue(final Consumer<T> success, final Consumer<Throwable> failure) {
         CompletableFuture.runAsync(() -> {
             try {
-                T result = execute();
+                final T result = execute();
                 if(success != null) success.accept(result);
             } catch (Throwable e) {
                 if(failure != null) failure.accept(e);
@@ -96,9 +96,9 @@ public class RestAction<T> {
      */
     public T execute() {
         try {
-            HttpClient.Builder client = build();
-            HttpRequest.Builder request = buildRequest();
-            HttpResponse<String> response = sendRequest(client.build(), request.build(), HttpResponse.BodyHandlers.ofString(), 3);
+            final HttpClient.Builder client = build();
+            final HttpRequest.Builder request = buildRequest();
+            final HttpResponse<String> response = sendRequest(client.build(), request.build(), HttpResponse.BodyHandlers.ofString(), 3);
             return responseHandler.apply(new RestResponse<>(response, String.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -107,7 +107,7 @@ public class RestAction<T> {
 
     protected <C> HttpResponse<C> sendRequest(HttpClient client, HttpRequest request, HttpResponse.BodyHandler<C> handler, int retries) {
         try {
-            HttpResponse<C> response = client.send(request, handler);
+            final HttpResponse<C> response = client.send(request, handler);
             if(response.headers().firstValue("x-ratelimit-remaining").orElse("1").equals("0")) {
                 // Rate limit
                 final long reset = Long.parseLong(response.headers().firstValue("x-ratelimit-reset").orElse("0"));

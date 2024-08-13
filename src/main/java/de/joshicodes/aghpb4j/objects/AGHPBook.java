@@ -32,7 +32,7 @@ public record AGHPBook(
             if(file.getParentFile() != null) file.getParentFile().mkdirs();
         }
         if(!file.getName().endsWith(".png") && !file.getName().endsWith(".jpg") && !file.getName().endsWith(".jpeg")) throw new IllegalArgumentException("File must be a valid image file (png, jpg, jpeg).");
-        try (OutputStream os = new FileOutputStream(file)) {
+        try (final OutputStream os = new FileOutputStream(file)) {
             os.write(imageBytes);
         }
     }

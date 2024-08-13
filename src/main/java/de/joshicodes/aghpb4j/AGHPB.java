@@ -8,7 +8,8 @@ import de.joshicodes.aghpb4j.action.RandomImageAction;
 import de.joshicodes.aghpb4j.action.RestAction;
 import de.joshicodes.aghpb4j.objects.AGHPBook;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class AGHPB {
      * @see #retrieveRandomBook(AGHPBook.BookImageType)
      * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
      */
-    public RandomImageAction retrieveRandomBook(String category) {
+    public RandomImageAction retrieveRandomBook(final String category) {
         return retrieveRandomBook().withCategory(category);
     }
 
@@ -70,7 +71,7 @@ public class AGHPB {
      * @see #retrieveRandomBook(String)
      * @see #retrieveRandomBook(String, AGHPBook.BookImageType)
      */
-    public RandomImageAction retrieveRandomBook(AGHPBook.BookImageType type) {
+    public RandomImageAction retrieveRandomBook(final AGHPBook.BookImageType type) {
         return retrieveRandomBook().useType(type);
     }
 
@@ -84,7 +85,7 @@ public class AGHPB {
      * @see #retrieveRandomBook(String)
      * @see #retrieveRandomBook(AGHPBook.BookImageType)
      */
-    public RandomImageAction retrieveRandomBook(String category, AGHPBook.BookImageType type) {
+    public RandomImageAction retrieveRandomBook(final String category, final AGHPBook.BookImageType type) {
         return retrieveRandomBook().withCategory(category).useType(type);
     }
 
@@ -96,7 +97,7 @@ public class AGHPB {
      */
     public RestAction<ApiStatus> retrieveStatus() {
         return new RestAction<>(url + "/nya", "GET", ApiStatus.class, response -> {
-            JsonObject json = response.getAsJsonObject();
+            final JsonObject json = response.getAsJsonObject();
             if(!json.has("version")) {
                 throw new IllegalStateException("Response does not contain a version field");
             }
@@ -111,15 +112,15 @@ public class AGHPB {
      * @see <a href="https://api.devgoldy.xyz/aghpb/v1/docs#/books/All_Available_Categories_categories_get">API Documentation</a>
      */
     public RestAction<List<String>> retrieveAllCategories() {
-        return new RestAction<List<String>>(url + "/categories", "GET", null, (response) -> {
-            JsonElement json = response.getAsJsonElement();
-            if(json == null || !json.isJsonArray()) {
+        return new RestAction<>(url + "/categories", "GET", null, (response) -> {
+            final JsonElement json = response.getAsJsonElement();
+            if (json == null || !json.isJsonArray()) {
                 throw new IllegalStateException("Response is not a JSON array");
             }
-            JsonArray array = json.getAsJsonArray();
-            List<String> categories = new ArrayList<>();
-            for(JsonElement element : array) {
-                if(!element.isJsonPrimitive()) {
+            final JsonArray array = json.getAsJsonArray();
+            final List<String> categories = new ArrayList<>();
+            for (JsonElement element : array) {
+                if (!element.isJsonPrimitive()) {
                     throw new IllegalStateException("Element is not a JSON primitive");
                 }
                 categories.add(element.getAsString());
@@ -134,7 +135,7 @@ public class AGHPB {
      * @param query The query to search for.
      * @return A RestAction for the search.
      */
-    public RestAction<List<AGHPBook>> retrieveSearch(String query) {
+    public RestAction<List<AGHPBook>> retrieveSearch(final String query) {
         return retrieveSearch(query, null, -1);
     }
 
@@ -145,7 +146,7 @@ public class AGHPB {
      * @param limit The limit of books to retrieve. Must be greater than 0.
      * @return A RestAction for the search.
      */
-    public RestAction<List<AGHPBook>> retrieveSearch(String query, int limit) {
+    public RestAction<List<AGHPBook>> retrieveSearch(final String query, final int limit) {
         return retrieveSearch(query, null, limit);
     }
 
@@ -156,7 +157,7 @@ public class AGHPB {
      * @param category The category to search in. Can be null.
      * @return A RestAction for the search.
      */
-    public RestAction<List<AGHPBook>> retrieveSearch(String query, String category) {
+    public RestAction<List<AGHPBook>> retrieveSearch(final String query, final String category) {
         return retrieveSearch(query, category, -1);
     }
 
@@ -168,20 +169,20 @@ public class AGHPB {
      * @param limit The limit of books to retrieve. Must be greater than 0.
      * @return A RestAction for the search.
      */
-    public RestAction<List<AGHPBook>> retrieveSearch(String query, String category, int limit) {
+    public RestAction<List<AGHPBook>> retrieveSearch(final String query, final String category, final int limit) {
         final String url = this.url + "/search?query=" + query + (category != null ? "&category=" + category : "") + (limit > 0 ? "&limit=" + limit : "");
         return new RestAction<>(url, "GET", null, (response) -> {
-            JsonElement json = response.getAsJsonElement();
+            final JsonElement json = response.getAsJsonElement();
             if(json == null || !json.isJsonArray()) {
                 throw new IllegalStateException("Response is not a JSON array");
             }
-            JsonArray array = json.getAsJsonArray();
-            List<AGHPBook> books = new ArrayList<>();
+            final JsonArray array = json.getAsJsonArray();
+            final List<AGHPBook> books = new ArrayList<>();
             for(JsonElement element : array) {
                 if(!element.isJsonObject()) {
                     continue;
                 }
-                JsonObject obj = element.getAsJsonObject();
+                final JsonObject obj = element.getAsJsonObject();
                 if(
                         !obj.has("search_id")
                         || !obj.has("name")
@@ -212,7 +213,7 @@ public class AGHPB {
      * @param book The book to retrieve.
      * @return An ImageAction for the book.
      */
-    public ImageAction<AGHPBook> retrieveBook(AGHPBook book) {
+    public ImageAction<AGHPBook> retrieveBook(final AGHPBook book) {
         return retrieveBook(book.searchId());
     }
 
@@ -222,7 +223,7 @@ public class AGHPB {
      * @param searchId The search_id of the book to retrieve.
      * @return An ImageAction for the book.
      */
-    public ImageAction<AGHPBook> retrieveBook(int searchId) {
+    public ImageAction<AGHPBook> retrieveBook(final int searchId) {
         return retrieveBook(searchId, AGHPBook.BookImageType.PNG);
     }
 
@@ -232,7 +233,7 @@ public class AGHPB {
      * @param type The format of the book.
      * @return An ImageAction for the book.
      */
-    public ImageAction<AGHPBook> retrieveBook(AGHPBook book, AGHPBook.BookImageType type) {
+    public ImageAction<AGHPBook> retrieveBook(final AGHPBook book, final AGHPBook.BookImageType type) {
         return retrieveBook(book.searchId(), type);
     }
 
@@ -242,7 +243,7 @@ public class AGHPB {
      * @param type The format of the book.
      * @return An ImageAction for the book.
      */
-    public ImageAction<AGHPBook> retrieveBook(int searchId, AGHPBook.BookImageType type) {
+    public ImageAction<AGHPBook> retrieveBook(final int searchId, final AGHPBook.BookImageType type) {
         final String url = this.url + "/get/id/" + searchId;
         return new ImageAction<>(url, AGHPBook.class, (request) -> {
             request.header("Accept", "image/" + type.name().toLowerCase());
@@ -250,10 +251,10 @@ public class AGHPB {
         }, response -> {
             final String contentType = response.httpResponse().headers().firstValue("Content-Type").orElse(null);
             if(contentType == null || !contentType.startsWith("image/")) {
-                JsonElement json = response.getAsJsonElement();
+                final JsonElement json = response.getAsJsonElement();
                 throw new IllegalStateException("Response is not an image! " + (json != null ? ("( " + json + " )") : ""));
             }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                 baos.write(response.httpResponse().body());
             } catch (IOException e) {
@@ -278,7 +279,7 @@ public class AGHPB {
      */
     public RestAction<ApiInfo> retrieveInfo() {
         return new RestAction<>(url + "/info", "GET", ApiInfo.class, response -> {
-            JsonObject json = response.getAsJsonObject();
+            final JsonObject json = response.getAsJsonObject();
             if(!json.has("book_count") || !json.has("api_version")) {
                 throw new IllegalStateException("Response does not contain bookCount or apiVersion field");
             }

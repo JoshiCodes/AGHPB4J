@@ -1,12 +1,9 @@
 package de.joshicodes.aghpb4j.action;
 
-import com.google.gson.JsonElement;
 import de.joshicodes.aghpb4j.objects.AGHPBook;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.http.HttpRequest;
-import java.util.function.Function;
 
 public class RandomImageAction extends ImageAction<AGHPBook> {
 
@@ -27,7 +24,7 @@ public class RandomImageAction extends ImageAction<AGHPBook> {
             if(contentType == null || !contentType.startsWith("image/")) {
                 throw new IllegalStateException("Failed request to " + url + "! Response is not an image! " + "( " + response.rawBody() + " )." + " Content Type is " + contentType + ". Expected image/*.");
             }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                 baos.write(response.httpResponse().body());
             } catch (IOException e) {
@@ -52,7 +49,6 @@ public class RandomImageAction extends ImageAction<AGHPBook> {
     public RandomImageAction withCategory(final String category) {
         final String cat = category != null ? ("?category=" + category) : "";
         url = String.format(URL, this.initialUrl) + cat;
-        System.out.println("URL: " + url);
         return this;
     }
 

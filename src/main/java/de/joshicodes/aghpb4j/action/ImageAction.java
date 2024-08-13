@@ -9,7 +9,7 @@ public class ImageAction<T> extends RestAction<T> {
 
     protected Function<RestResponse<byte[]>, T> responseHandler;
 
-    public ImageAction(String url, Class<T> tClass, Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, Function<RestResponse<byte[]>, T> responseHandler) {
+    public ImageAction(final String url, final Class<T> tClass, final Function<HttpRequest.Builder, HttpRequest.Builder> clientModifier, final Function<RestResponse<byte[]>, T> responseHandler) {
         super(url, "GET", tClass, clientModifier, null);
         this.responseHandler = responseHandler;
     }
@@ -17,12 +17,9 @@ public class ImageAction<T> extends RestAction<T> {
     @Override
     public T execute() {
         try {
-            HttpClient.Builder client = build();
-            HttpRequest.Builder request = buildRequest();
-            if(clientModifier != null) {
-                request = clientModifier.apply(request);
-            }
-            HttpResponse<byte[]> response = sendRequest(client.build(), request.build(), HttpResponse.BodyHandlers.ofByteArray(), 3);
+            final HttpClient.Builder client = build();
+            final HttpRequest.Builder request = buildRequest();
+            final HttpResponse<byte[]> response = sendRequest(client.build(), request.build(), HttpResponse.BodyHandlers.ofByteArray(), 3);
             return this.responseHandler.apply(new RestResponse<>(response, byte[].class));
         } catch (Exception e) {
             throw new RuntimeException(e);
