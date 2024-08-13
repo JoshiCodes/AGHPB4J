@@ -70,6 +70,8 @@ System.out.println(book.getUrl());
 aghpb.retrieveRandomImage().queue(book -> System.out.println(book.getUrl())); // Asynchronous
 ```
 
+### For more examples, see [here](https://github.com/JoshiCodes/AGHPB4J/blob/master/examples/Examples.java).
+
 #### Methods
 - `AGHPB#retrieveStatus()` - `ApiStatus`
     Returns the status of the API.
