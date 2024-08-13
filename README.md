@@ -10,7 +10,7 @@
 </div>
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/cat-milk/Anime-Girls-Holding-Programming-Books/master/Java/Natsukawa_Masuzu_Java_Programming.png" width="400px">
+    <img src="https://github.com/cat-milk/Anime-Girls-Holding-Programming-Books/blob/master/Java/Unnamed_Core_Java.jpg?raw=true" width="500px">
 </div>
 
 > [!Note]
